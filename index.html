@@ -1,0 +1,84 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-face-aframe.prod.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const list = ["hat2"];
+            const visibles = [false];
+            const setVisible = (button, entities, visible) => {
+                if (visible) {
+                    button.classList.add("selected");
+                    button.innerHTML = "scanning..."
+                    setTimeout(() => {
+                        document.getElementsByClassName("options-panel")[0].style.display = "none";
+                    }, 5000);
+                } else {
+                    button.classList.remove("selected");
+                }
+                entities.forEach((entity) => {
+                    entity.setAttribute("visible", visible);
+                });
+            }
+            list.forEach((item, index) => {
+                const button = document.querySelector("#" + item);
+                const entities = document.querySelectorAll("." + item + "-entity");
+                setVisible(button, entities, visibles[index]);
+                button.addEventListener('click', () => {
+                    visibles[index] = !visibles[index];
+                    setVisible(button, entities, visibles[index]);
+                });
+            });
+        })
+    </script>
+    <style>
+        body {
+            margin: 0;
+        }
+        .example-container {
+            overflow: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .options-panel {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+        }
+        #hat2 {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 0;
+            background-color: red;
+            color: white;
+            text-transform: uppercase;
+            align-self: center;
+        }
+    </style>
+</head>
+<body>
+<div class="example-container">
+    <div class="options-panel">
+        <button id="hat2" src="./scene.gltf">scan</button>
+    </div>
+    <a-scene mindar-face embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        <a-assets>
+            <a-asset-item id="headModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.2/examples/face-tracking/assets/sparkar/headOccluder.glb"></a-asset-item>
+            <a-asset-item id="hatModel2" src="./scene.gltf"></a-asset-item>
+        </a-assets>
+        <a-camera active="false" position="0 0 0"></a-camera>
+        <!-- head occluder -->
+        <a-entity mindar-face-target="anchorIndex: 168">
+            <a-gltf-model mindar-face-occluder position="0 -0.3 0.15" rotation="0 0 0" scale="0.065 0.065 0.065" src="#headModel"></a-gltf-model>
+        </a-entity>
+        <a-entity mindar-face-target="anchorIndex: 10">
+            <a-image position="0.05 0.4 0.1" scale="0.5 0.5 0.5" src="./logo.png" class="hat2-entity"></a-image>
+            <a-gltf-model rotation="-20 0 0" position="0 -0.1 -0.5" scale="0.006 0.006 0.006" src="#hatModel2" class="hat2-entity"></a-gltf-model>
+        </a-entity>
+    </a-scene>
+</div>
+</body>
+</html>
